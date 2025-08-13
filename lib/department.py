@@ -1,3 +1,4 @@
+
 # lib/department.py
 
 from __init__ import CURSOR, CONN
@@ -127,7 +128,6 @@ class Department:
 
         row = CURSOR.execute(sql, (id,)).fetchone()
         return cls.instance_from_db(row) if row else None
-
     @classmethod
     def find_by_name(cls, name):
         """Return a Department object corresponding to first table row matching specified name"""
@@ -139,3 +139,17 @@ class Department:
 
         row = CURSOR.execute(sql, (name,)).fetchone()
         return cls.instance_from_db(row) if row else None
+
+    def employees(self):
+        """Return list of employees associated with current department"""
+        from employee import Employee
+        sql = """
+            SELECT * FROM employees
+            WHERE department_id = ?
+        """
+        CURSOR.execute(sql, (self.id,),)
+
+        rows = CURSOR.fetchall()
+        return [
+            Employee.instance_from_db(row) for row in rows
+        ]
